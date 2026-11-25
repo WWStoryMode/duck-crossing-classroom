@@ -1,0 +1,15 @@
+# Render Blueprint: one always-on Node web service (in-memory state needs exactly one instance).
+services:
+  - type: web
+    name: duck-crossing
+    runtime: node
+    plan: free
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    numInstances: 1
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: TEACHER_CODE
+        sync: false # Render asks you for this value when you create the service
