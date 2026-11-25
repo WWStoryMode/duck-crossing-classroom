@@ -28,11 +28,14 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, { maxHttpBufferSize: 32_000 });
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
+// Used by the presentation's join QR (slide 5). null → the deck falls back to its own origin.
+app.get('/api/join-url', (_req, res) => res.json({ url: PUBLIC_URL || null }));
 
 // Serve the built frontend in production.
 const clientDir = path.resolve(process.cwd(), 'dist/client');
 if (fs.existsSync(clientDir)) {
   app.use(express.static(clientDir, { index: false }));
+  app.get('/present', (_req, res) => res.sendFile(path.join(clientDir, 'present.html')));
   app.get('*', (_req, res) => res.sendFile(path.join(clientDir, 'index.html')));
 } else {
   app.get('/', (_req, res) =>

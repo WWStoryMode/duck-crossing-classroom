@@ -123,6 +123,9 @@ export default function Teacher() {
         </div>
         <div className="flex items-center gap-4">
           <ConnectionDot />
+          <a href="/present" target="_blank" rel="noreferrer" className="btn-secondary">
+            Open presentation ↗
+          </a>
           <a href="/results" target="_blank" rel="noreferrer" className="btn-secondary">
             Open projector view ↗
           </a>

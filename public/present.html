@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f8f5ee" />
+  <title>Pedagogy and Game-Based Learning · Duck Crossing</title>
+  <style>
+    :root{--paper:#f8f5ee;--white:#ffffff;--ink:#192c3e;--muted:#586777;--teal:#37736d;--mist:#e6f0ec;--gold:#ebbf66;--sand:#f8edcf;--line:#dcdedb;--red:#b54d44;--scale:1}
+    *{box-sizing:border-box}html,body{margin:0;min-width:320px;min-height:100%;background:var(--paper);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+    button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.4;cursor:default}button:focus-visible,input:focus-visible{outline:3px solid #c78b39;outline-offset:3px}
+    #shell{min-height:100dvh;display:flex;flex-direction:column;overflow:hidden}#toolbar{height:62px;min-height:62px;padding:8px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);background:#fffdf9;z-index:30}
+    .brand{font-size:12px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--teal);white-space:nowrap}.muted{color:var(--muted)}.spacer{flex:1}
+    .tool-btn{background:#fff;border:1px solid #cdd6d1;color:var(--ink);border-radius:10px;padding:9px 12px;font-size:13px;font-weight:700;white-space:nowrap}.tool-btn:hover{background:#f0f4f1}.tool-btn.strong{background:var(--ink);color:#fff;border-color:var(--ink)}
+    #clock{font-weight:800;letter-spacing:.03em;font-variant-numeric:tabular-nums;font-size:17px}#clock.late{color:var(--red)}
+    #stage{width:100%;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:16px 18px 56px}#slide-frame{width:min(100%,calc((100dvh - 146px)*16/9),1480px);aspect-ratio:16/9;background:var(--white);box-shadow:0 18px 60px #112b3326;border:1px solid #e5e7e3;border-radius:12px;position:relative;overflow:hidden}
+    .slide{display:none;position:absolute;inset:0;padding:clamp(26px,4.4vw,76px);overflow:auto}.slide.active{display:flex;flex-direction:column}.slide:focus{outline:none}
+    .eyebrow{font-size:clamp(11px,1.1vw,17px);text-transform:uppercase;letter-spacing:.2em;font-weight:800;color:var(--teal);margin-bottom:clamp(12px,1.8vw,30px)}
+    h1,h2,h3,p{margin:0}h1,h2{font-weight:760;letter-spacing:-.045em;line-height:1.07}h1{font-size:clamp(40px,5.05vw,82px)}h2{font-size:clamp(30px,4.05vw,66px)}h3{font-size:clamp(18px,1.9vw,29px);line-height:1.18}
+    .lede{font-size:clamp(19px,2.25vw,35px);line-height:1.36;letter-spacing:-.022em}.body{font-size:clamp(16px,1.47vw,24px);line-height:1.45}.small{font-size:clamp(13px,1.16vw,18px);line-height:1.4}.tiny{font-size:clamp(11px,.97vw,15px);line-height:1.3}.chip{display:inline-flex;align-items:center;gap:5px;border-radius:30px;background:var(--sand);padding:7px 12px;font-weight:800;font-size:clamp(11px,.95vw,15px)}.chip.teal{background:var(--mist);color:#285d57}
+    .two{display:grid;grid-template-columns:1.08fr .92fr;gap:clamp(18px,3vw,48px);align-items:stretch;flex:1;min-height:0}.cols3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.panel{border:1px solid var(--line);border-radius:15px;background:#fff;padding:clamp(16px,2vw,30px)}.panel.faint{background:#f5f7f4}.panel.sand{background:#fff5df;border-color:#f4dfa8}.panel.mist{background:#eaf4f0;border-color:#d3e7df}.top-rule{width:90px;height:5px;background:var(--gold);border-radius:3px;margin:22px 0}
+    .quote{font-size:clamp(23px,2.75vw,43px);font-weight:650;letter-spacing:-.033em;line-height:1.28}.footnote{margin-top:auto;color:var(--muted);font-size:clamp(12px,1vw,16px);line-height:1.35}
+    .slide-num{position:absolute;right:30px;bottom:20px;color:#8c9a9c;font-size:13px;font-weight:800;letter-spacing:.16em}.kicker{font-size:clamp(16px,1.45vw,24px);font-weight:700;line-height:1.4}.step-stack{display:flex;flex-direction:column;align-items:center;gap:8px;margin:10px 0}.step{background:#f1f5f2;border:1px solid #d9e5dd;border-radius:13px;width:100%;padding:clamp(10px,1.3vw,19px);font-size:clamp(18px,1.7vw,27px);font-weight:750;text-align:center}.arrow{font-size:22px;color:#8dada2;line-height:1}
+    .bloom{display:flex;gap:5px;width:100%;margin-top:10px}.bloom span{flex:1;border-radius:6px;padding:10px 2px;text-align:center;font-size:clamp(10px,1.02vw,15px);font-weight:800;color:#21303e;background:#e5eee9}.bloom span:nth-child(3),.bloom span:nth-child(4){background:#ecf0e8}.bloom span:nth-child(5),.bloom span:nth-child(6){background:#fbebc8}
+    .icon-num{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:var(--ink);color:white;flex:none;font-weight:850}.outcome-pill{display:inline-block;padding:8px 13px;border-radius:8px;font-size:14px;font-weight:800;background:#e2efe8;color:#2a5f51}.outcome-pill.b{background:#fff0c6;color:#8b5f13}
+    .assignment{background:#fff;border:1px solid #dbe2df;padding:clamp(12px,1.5vw,20px);border-radius:13px;min-height:0}.assignment strong{display:block;font-size:clamp(15px,1.5vw,24px);margin-bottom:6px}.assignment span{color:var(--muted);font-size:clamp(12px,1.15vw,18px)}
+    #joinQr{height:min(23vw,240px);width:min(23vw,240px);background:white;display:flex;align-items:center;justify-content:center;border:1px solid #dbe0db;border-radius:10px;margin:auto}#joinQr svg{height:95%;width:95%}.web-url{word-break:break-all;font-size:clamp(11px,.99vw,16px);font-weight:800;text-align:center;color:var(--teal)}
+    #activityTimer{font-variant-numeric:tabular-nums;font-size:clamp(32px,3.4vw,52px);font-weight:800;letter-spacing:-.03em}.time-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    #resultsEmbed{height:100%;width:100%;border:0;background:#fff}#teacherEmbed{width:100%;height:100%;border:0;background:white}.embedded{border:1px solid var(--line);border-radius:12px;overflow:hidden;min-height:0;flex:1}.side-sheet{position:fixed;z-index:60;right:0;top:0;bottom:0;width:min(620px,95vw);background:#fff;box-shadow:-13px 0 50px #10202d50;display:none;flex-direction:column}.side-sheet.open{display:flex}.sheet-head{padding:15px 20px;display:flex;align-items:center;gap:20px;border-bottom:1px solid var(--line)}.sheet-head h2{font-size:20px}.shade{position:fixed;inset:0;background:#0d223f60;z-index:59;display:none}.shade.show{display:block}
+    #bottom{position:fixed;bottom:8px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:12px;pointer-events:none;z-index:35}#bottom button,#bottom #progress{pointer-events:auto}.nav-btn{width:40px;height:36px;background:#fff;border:1px solid #cfd9d4;border-radius:9px;color:var(--ink);font-weight:900;font-size:19px}.nav-btn:disabled{opacity:.25}#progress{font-size:12px;color:#586777;background:#ffffffdd;padding:8px 13px;border-radius:20px;border:1px solid #e2e6e2;font-weight:750;font-variant-numeric:tabular-nums}
+    #notes{position:fixed;z-index:53;left:12px;bottom:55px;max-width:550px;width:calc(100% - 24px);border-radius:14px;border:1px solid #cbd8ce;box-shadow:0 20px 70px #10202d30;background:white;padding:20px;display:none}#notes.open{display:block}#notes h3{font-size:18px;margin-bottom:9px}#notes p{line-height:1.5;white-space:pre-line}#notes small{display:block;color:#7b4d20;margin-top:12px}
+    #setup{position:fixed;z-index:54;right:14px;top:68px;width:min(430px,calc(100vw - 28px));padding:18px;display:none;background:#fff;border:1px solid var(--line);box-shadow:0 20px 55px #10202d22;border-radius:12px}#setup.open{display:block}#setup input{width:100%;border:1px solid #b5cac2;border-radius:8px;padding:12px;margin:10px 0}#setup p{color:var(--muted);line-height:1.5;font-size:13px}
+    #overview{position:fixed;z-index:56;inset:8vh 7vw;background:#fff;display:none;border-radius:16px;box-shadow:0 15px 80px #112b3360;padding:28px;overflow:auto}#overview.open{display:block}#overview h2{font-size:29px;margin-bottom:20px}.overview-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.overview-tile{min-height:125px;border:1px solid var(--line);background:var(--paper);border-radius:10px;text-align:left;padding:18px;font-weight:750}.overview-tile span{display:block;color:var(--teal);font-size:13px;margin-bottom:12px}.overview-tile:hover{border-color:var(--teal)}
+    .subtlelink{font-size:13px;color:var(--teal);font-weight:750;text-decoration:underline;word-break:break-word}.fade-list>*{opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s}.fade-list.revealed>*{opacity:1;transform:translateY(0)}
+    @media(max-width:760px){#toolbar{height:54px;min-height:54px;padding:5px 9px;gap:5px}.brand{font-size:10px}.tool-btn{font-size:11px;padding:7px}.hide-small{display:none}#clock{font-size:13px}#stage{padding:8px 8px 53px}#slide-frame{width:100%;aspect-ratio:auto;height:calc(100dvh - 116px)}.slide{padding:24px}.two{grid-template-columns:1fr;gap:13px;overflow:auto}.cols3{grid-template-columns:1fr}.slide h1{font-size:40px}.slide h2{font-size:31px}.slide .body{font-size:16px}.slide .lede{font-size:20px}.slide .quote{font-size:23px}.slide .eyebrow{font-size:11px}.bloom span{font-size:9px;padding:8px 0}.slide-num{bottom:12px;right:17px}#joinQr{width:165px;height:165px}#overview{inset:7vh 4vw;padding:15px}.overview-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.embedded{min-height:380px}#slide6 .two{display:flex;flex-direction:column}#slide6 .two>div:first-child{flex:none}#slide6 .two>div:last-child{height:480px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+    @media print{#toolbar,#bottom,#notes,#setup,#overview,.side-sheet,.shade{display:none!important}#stage{padding:0!important}#slide-frame{width:100%;height:100%;max-height:none;aspect-ratio:auto;border:0;box-shadow:none}.slide{position:relative;display:block!important;height:100vh;page-break-after:always;overflow:visible}html,body{background:white}@page{size:landscape;margin:0}}
+  </style>
+</head>
+<body>
+<div id="shell">
+  <header id="toolbar">
+    <span class="brand">CS6001 / Microteaching</span>
+    <button class="tool-btn hide-small" id="overviewBtn" title="View slides (O)">Slides ▦</button>
+    <button class="tool-btn hide-small" id="notesBtn" title="Presenter notes (N)">Notes</button>
+    <button class="tool-btn hide-small" id="settingsBtn" title="Set questionnaire host">App URL</button>
+    <span class="spacer"></span>
+    <span id="clock" aria-live="off">15:00</span>
+    <button class="tool-btn" id="timeBtn">Start timer</button>
+    <button class="tool-btn hide-small" id="timeResetBtn">Reset</button>
+    <button class="tool-btn strong" id="fullBtn">Fullscreen</button>
+  </header>
+  <main id="stage"><div id="slide-frame" aria-label="Pedagogy and game-based learning presentation">
+    <section class="slide active" id="slide1" data-title="Opening question" tabindex="-1">
+      <div class="eyebrow">New to Teaching in Higher Education · 15 minutes</div>
+      <div class="two" style="align-items:center">
+        <div style="display:flex;flex-direction:column;justify-content:center">
+          <h1>Pedagogy<br><span style="color:var(--teal)">&amp; Game-Based</span><br>Learning</h1>
+          <div class="top-rule"></div>
+          <p class="lede">Can a game be entertaining<br>but <em>fail to teach?</em></p>
+          <p class="small muted" style="margin-top:24px">Consider a game that rewards players for crossing when the pedestrian signal turns green.</p>
+        </div>
+        <div class="panel sand" style="display:flex;flex-direction:column;justify-content:space-evenly;gap:24px;align-items:center;text-align:center">
+          <svg viewBox="0 0 220 205" style="height:38%;max-height:205px;max-width:100%" aria-hidden="true"><rect x="65" y="5" width="90" height="180" rx="24" fill="#1d3040"/><circle cx="110" cy="44" r="22" fill="#394957"/><circle cx="110" cy="96" r="22" fill="#46535b"/><circle cx="110" cy="146" r="22" fill="#57ad79"/><path d="M101 146l7 8 17-21" fill="none" stroke="white" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M110 185v16" stroke="#1d3040" stroke-width="9"/></svg>
+          <p class="quote">“Green light.<br>Cross now.”</p>
+          <p class="small" style="max-width:330px">Does following this rule mean the player understands road safety?</p>
+        </div>
+      </div><span class="slide-num">01 / 08</span>
+    </section>
+
+    <section class="slide" id="slide2" data-title="Learning outcome" tabindex="-1">
+      <div class="eyebrow">Learning outcome</div>
+      <h2>What will we learn?</h2>
+      <div class="panel mist" style="margin-top:clamp(20px,4vw,64px);padding:clamp(25px,3vw,55px)"><span class="chip teal">By the end of this session</span><p class="quote" style="margin-top:23px;max-width:1120px">Evaluate whether a game mechanic supports a specific learning outcome—and <em>justify why</em>.</p></div>
+      <div class="cols3" style="margin-top:clamp(15px,2.2vw,36px)">
+        <div class="panel faint"><h3>Different outcomes</h3><p class="small muted" style="margin-top:10px">May require different player actions.</p></div>
+        <div class="panel faint"><h3>More complex ≠ better</h3><p class="small muted" style="margin-top:10px">Appropriateness depends on learner and purpose.</p></div>
+        <div class="panel faint"><h3>Success ≠ learning</h3><p class="small muted" style="margin-top:10px">Game scores are not enough on their own.</p></div>
+      </div><span class="slide-num">02 / 08</span>
+    </section>
+
+    <section class="slide" id="slide3" data-title="Theory to mechanics" tabindex="-1">
+      <div class="eyebrow">Constructive alignment · Bloom's taxonomy</div>
+      <h2>From learning to doing</h2>
+      <div class="two" style="margin-top:22px;grid-template-columns:.86fr 1.14fr">
+        <div class="panel faint" style="display:flex;flex-direction:column;justify-content:center;gap:14px">
+          <div class="step-stack"><div class="step">Learning outcome</div><div class="arrow">↓</div><div class="step">Player action / mechanic</div><div class="arrow">↓</div><div class="step">Evidence of learning</div></div>
+          <p class="small muted" style="text-align:center">What learners should achieve, what they do, and how we might know.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:15px;min-height:0">
+          <div class="panel" style="flex:1"><span class="outcome-pill">Outcome A · Recognise</span><p class="body" style="margin-top:9px">Identify when a pedestrian signal permits crossing to begin.</p><p class="small muted" style="margin-top:12px">Possible mechanic: press when the signal turns green.</p></div>
+          <div class="panel sand" style="flex:1"><span class="outcome-pill b">Outcome B · Evaluate</span><p class="body" style="margin-top:9px">Judge when crossing is safe given signals and approaching traffic.</p><p class="small muted" style="margin-top:12px">Possible mechanic: observe traffic and decide whether to cross or wait.</p></div>
+        </div>
+      </div>
+      <div style="margin-top:17px"><p class="tiny muted">Bloom's cognitive processes — more complexity is not automatically better</p><div class="bloom"><span>Remember</span><span>Understand</span><span>Apply</span><span>Analyse</span><span>Evaluate</span><span>Create</span></div></div>
+      <span class="slide-num">03 / 08</span>
+    </section>
+
+    <section class="slide" id="slide4" data-title="Duck Crossing" tabindex="-1">
+      <div class="eyebrow">A learning game in development</div>
+      <div class="two" style="grid-template-columns:1fr 1.03fr">
+        <div style="display:flex;flex-direction:column;gap:15px;justify-content:center"><h2>Meet <span style="color:var(--teal)">Duck Crossing</span></h2><p class="lede">A parent duck must guide six ducklings safely across busy roads to reach a pond.</p><p class="body muted">Traffic signals. Cars. Cyclists. Different crossing conditions. Decisions and consequences.</p><div class="panel mist" style="margin-top:6px"><p class="body"><strong>The game is unfinished.</strong><br>Which possible mechanics best support the learning outcomes?</p></div></div>
+        <div class="panel sand" style="display:flex;align-items:center;justify-content:center;padding:8px;overflow:hidden">
+          <svg viewBox="0 0 480 360" width="100%" role="img" aria-label="Illustration: mother duck and six ducklings wait beside a zebra crossing as a cyclist approaches"><rect width="480" height="360" fill="#ebf1df"/><rect x="125" width="230" height="360" fill="#57636e"/><path d="M125 0v360M355 0v360" stroke="#ecf0e0" stroke-width="7"/><path d="M240 0v360" stroke="#d7dece" stroke-width="6" stroke-dasharray="30 30"/><g fill="#f9f9f6"> <rect x="143" y="112" width="194" height="15" rx="3"/><rect x="143" y="148" width="194" height="15" rx="3"/><rect x="143" y="184" width="194" height="15" rx="3"/><rect x="143" y="220" width="194" height="15" rx="3"/></g><rect x="379" y="24" width="32" height="89" rx="9" fill="#203544"/><circle cx="395" cy="44" r="10" fill="#45525c"/><circle cx="395" cy="68" r="10" fill="#45525c"/><circle cx="395" cy="93" r="10" fill="#4eb17a"/><rect x="389" y="110" width="12" height="26" fill="#203544"/><g transform="translate(48,194)"><ellipse cx="32" cy="20" rx="32" ry="20" fill="#e5b65b" stroke="#263744" stroke-width="2"/><circle cx="55" cy="4" r="19" fill="#e5b65b" stroke="#263744" stroke-width="2"/><path d="M72 6l21 7-21 6z" fill="#e4803e"/><circle cx="60" cy="-1" r="3" fill="#203544"/></g><g fill="#f0ce7a" stroke="#273949" stroke-width="1.5"><g transform="translate(20,253)"><ellipse cx="11" cy="7" rx="13" ry="10"/><circle cx="22" cy="-2" r="8"/></g><g transform="translate(55,263)"><ellipse cx="11" cy="7" rx="13" ry="10"/><circle cx="22" cy="-2" r="8"/></g><g transform="translate(18,291)"><ellipse cx="11" cy="7" rx="13" ry="10"/><circle cx="22" cy="-2" r="8"/></g><g transform="translate(55,309)"><ellipse cx="11" cy="7" rx="13" ry="10"/><circle cx="22" cy="-2" r="8"/></g><g transform="translate(88,275)"><ellipse cx="11" cy="7" rx="13" ry="10"/><circle cx="22" cy="-2" r="8"/></g><g transform="translate(95,326)"><ellipse cx="11" cy="7" rx="13" ry="10"/><circle cx="22" cy="-2" r="8"/></g></g><g transform="translate(301,265)" fill="none" stroke="#1d3341" stroke-width="5"><circle cx="0" cy="0" r="25"/><circle cx="67" cy="0" r="25"/><path d="M0 0l26-40 13 40H0l28-45 39 45"/><circle cx="27" cy="-63" r="13" fill="#d0d5c8"/><path d="M28-50l15 24 19 10" stroke-linecap="round"/></g><path d="M400 168h45" stroke="#445b63" stroke-width="5" stroke-linecap="round"/><path d="M425 154l20 14-20 14" fill="none" stroke="#445b63" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div><span class="slide-num">04 / 08</span>
+    </section>
+
+    <section class="slide" id="slide5" data-title="Group activity" tabindex="-1">
+      <div class="eyebrow">Group activity · 4 minutes</div>
+      <div class="two" style="grid-template-columns:1.27fr .73fr;gap:20px">
+        <div style="display:flex;flex-direction:column;min-height:0"><h2>Match the mechanics</h2><p class="kicker muted" style="margin:14px 0 18px">For your table, match each of six mechanics to its two learning outcomes.</p>
+          <div class="cols3" style="gap:10px;grid-template-columns:repeat(4,1fr);margin-bottom:17px"><div class="panel mist" style="padding:13px;text-align:center"><strong>A only</strong></div><div class="panel sand" style="padding:13px;text-align:center"><strong>B only</strong></div><div class="panel faint" style="padding:13px;text-align:center"><strong>Both</strong></div><div class="panel faint" style="padding:13px;text-align:center"><strong>Neither</strong></div></div>
+          <div class="cols3" style="grid-template-columns:1fr 1fr;gap:10px;flex:1"><div class="assignment"><strong>Table 1</strong><span>Crossing decisions &amp; traffic</span></div><div class="assignment"><strong>Table 2</strong><span>Feedback &amp; failure</span></div><div class="assignment"><strong>Table 3</strong><span>Flock management &amp; winning</span></div><div class="assignment"><strong>Table 4</strong><span>Observation &amp; difficulty</span></div></div><p class="small muted" style="margin-top:13px">Choose one debatable match and be ready to explain your reasoning.</p>
+        </div>
+        <div class="panel sand" style="text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center"><p class="small" style="font-weight:800">Scan to join the questionnaire</p><div id="joinQr" role="img" aria-label="QR code to join questionnaire">QR</div><p id="joinText" class="web-url">Loading join URL…</p><div style="border-top:1px solid #e2d8bd;width:100%;margin:8px 0"></div><div class="small muted">Activity countdown</div><div id="activityTimer">04:00</div><div class="time-controls"><button class="tool-btn strong" id="activityBtn">Start</button><button class="tool-btn" id="activityResetBtn">Reset</button></div></div>
+      </div><span class="slide-num">05 / 08</span>
+    </section>
+
+    <section class="slide" id="slide6" data-title="Live answers" tabindex="-1" style="padding:clamp(18px,2.6vw,42px)">
+      <div class="eyebrow" style="margin-bottom:8px">Live class discussion</div>
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:13px"><h2 style="font-size:clamp(27px,3.4vw,54px)">What did we choose—and why?</h2><span class="spacer"></span><button class="tool-btn strong" id="teacherOpen">Teacher controls</button></div>
+      <div class="embedded" style="flex:1"><iframe id="resultsEmbed" title="Live Duck Crossing group results" loading="lazy"></iframe></div>
+      <p class="tiny muted" style="margin-top:8px">Select a table in the results view, invite a group to justify one match, then reveal the suggested classification. Results update live on the same server.</p>
+      <span class="slide-num">06 / 08</span>
+    </section>
+
+    <section class="slide" id="slide7" data-title="Evidence of learning" tabindex="-1">
+      <div class="eyebrow">Theory is not proof</div><h2>How do we know learning happened?</h2>
+      <p class="lede muted" style="margin:18px 0 25px">If a mechanic appears aligned with an outcome, does that prove it teaches effectively?</p>
+      <div class="cols3" style="flex:1;min-height:0"><div class="panel faint" style="display:flex;flex-direction:column"><span class="chip teal" style="align-self:flex-start">01 · Rationale</span><h3 style="margin:20px 0 12px">Why might it work?</h3><p class="body">Pedagogical theory helps justify a design choice.</p><p class="small muted" style="margin-top:auto;padding-top:15px">Bloom's taxonomy · Constructive alignment</p></div><div class="panel mist" style="display:flex;flex-direction:column"><span class="chip teal" style="align-self:flex-start">02 · Practice</span><h3 style="margin:20px 0 12px">What do learners do?</h3><p class="body">Player choices, challenge and feedback create opportunities to learn.</p><p class="small muted" style="margin-top:auto;padding-top:15px">Activity · Explanation · Revision</p></div><div class="panel sand" style="display:flex;flex-direction:column"><span class="chip" style="align-self:flex-start">03 · Evaluation</span><h3 style="margin:20px 0 12px">Did learning improve?</h3><p class="body">Observe decisions, explanations and responses to unfamiliar situations.</p><p class="small muted" style="margin-top:auto;padding-top:15px">Playtesting · Before/after evidence · Transfer</p></div></div>
+      <p class="footnote">A good pedagogical argument is a hypothesis; effectiveness requires evidence from learners.</p><span class="slide-num">07 / 08</span>
+    </section>
+
+    <section class="slide" id="slide8" data-title="Conclusion" tabindex="-1">
+      <div class="eyebrow">Conclusion</div><div style="display:flex;flex-direction:column;justify-content:center;flex:1;max-width:1160px"><h1>Engagement is not<br><span style="color:var(--teal)">evidence of learning.</span></h1><div class="top-rule" style="margin:32px 0"></div><p class="lede">Align learning objectives, player actions, feedback and assessment.</p><p class="body muted" style="margin-top:18px">Then evaluate whether real learners achieve those objectives.</p><div class="panel sand" style="margin-top:34px"><p class="kicker">Final question</p><p class="body" style="margin-top:10px">What would you need to observe before claiming that <em>Duck Crossing</em> successfully teaches road safety?</p></div></div>
+      <p class="footnote">Based on the original CS6001 microteaching material; conceptual references: Bloom's revised taxonomy and constructive alignment (Biggs &amp; Tang).</p><span class="slide-num">08 / 08</span>
+    </section>
+  </div></main>
+  <footer id="bottom"><button class="nav-btn" id="prevBtn" aria-label="Previous slide">‹</button><span id="progress">1 / 8</span><button class="nav-btn" id="nextBtn" aria-label="Next slide">›</button></footer>
+</div>
+<div id="shade" class="shade"></div>
+<aside id="teacherSheet" class="side-sheet" aria-label="Teacher dashboard"><div class="sheet-head"><h2>Teacher controls</h2><span class="spacer"></span><button class="tool-btn" id="teacherClose">Close ×</button></div><iframe id="teacherEmbed" title="Teacher dashboard and answer reveal controls"></iframe></aside>
+<section id="notes" aria-live="polite"><h3 id="notesTitle"></h3><p id="notesBody"></p><small>Presenter notes are visible on the screen when opened. Press N to hide.</small></section>
+<div id="setup"><strong>Questionnaire server URL</strong><p>When hosted inside the Duck Crossing app, this uses the same server automatically. For an offline slide file, enter the public URL of your running app.</p><input id="serverInput" placeholder="https://your-duck-crossing-app.example.com"/><button class="tool-btn strong" id="serverSave">Use this URL</button><p id="serverStatus" style="margin-top:10px"></p></div>
+<section id="overview" aria-label="Slide overview"><div style="display:flex;justify-content:space-between;align-items:center"><h2>All slides</h2><button class="tool-btn" id="overviewClose">Close ×</button></div><div class="overview-grid" id="overviewGrid"></div></section>
+<script src="./duck-qr.js"></script>
+<script>
+(()=>{
+  'use strict';
+  const $=id=>document.getElementById(id);
+  const slides=[...document.querySelectorAll('.slide')];let current=0;
+  const notes=[
+    '1:30 — Open by asking whether following a pedestrian signal is equivalent to understanding safety. Invite one or two contrasting views. Do not give an answer yet.',
+    '1:00 — State one observable learning outcome: evaluating alignment and justifying a match. Keep the focus on appropriateness, not complexity alone.',
+    '1:00 — Introduce Bloom and constructive alignment briefly. Recognising a green signal differs from evaluating the overall crossing situation. Green alone is not a guarantee of safety.',
+    '1:00 — Explain the fictional duck family and unfinished game. The activity critiques proposed mechanics rather than asking groups to invent a game.',
+    '4:45 — Give instructions for matching six cards to A, B, Both or Neither. QR is the student route. Invite groups to select one debatable choice. Start the four-minute activity countdown.',
+    '2:45 — Pick two or three selected examples rather than asking all four groups to report six answers. Invite justification before showing answers. The teacher dashboard is embedded here; authenticate and reveal when ready. If only one group per table, use individual responses, not statistical comparisons.',
+    '1:30 — Ask whether alignment proves learning. Distinguish theory-based rationale from evidence gathered from learners. Playtesting for usability is not the same as testing learning effectiveness.',
+    '0:45 — Return to the opening question. End with the distinction: engagement, apparent alignment and demonstrated learning are different claims.'
+  ];
+  const timed={main:{seconds:900,run:false},activity:{seconds:240,run:false}};
+  const fmt=n=>`${Math.floor(Math.max(0,n)/60).toString().padStart(2,'0')}:${(Math.max(0,n)%60).toString().padStart(2,'0')}`;
+  function setSlide(i){current=Math.min(Math.max(i,0),slides.length-1);slides.forEach((s,j)=>{s.classList.toggle('active',j===current);s.setAttribute('aria-hidden',String(j!==current))});$('progress').textContent=`${current+1} / ${slides.length}`;$('prevBtn').disabled=current===0;$('nextBtn').disabled=current===slides.length-1;$('notesTitle').textContent=`Slide ${current+1} · ${slides[current].dataset.title}`;$('notesBody').textContent=notes[current];$('overview').classList.remove('open');document.title=`${current+1}/8 · ${slides[current].dataset.title} · Duck Crossing`;if(current===5)attachFrames();}
+  function renderTime(){ $('clock').textContent=fmt(timed.main.seconds);$('clock').classList.toggle('late',timed.main.seconds===0);$('timeBtn').textContent=timed.main.run?'Pause timer':'Start timer';$('activityTimer').textContent=fmt(timed.activity.seconds);$('activityBtn').textContent=timed.activity.run?'Pause':'Start';$('activityTimer').style.color=timed.activity.seconds===0?'var(--red)':'var(--ink)'; }
+  setInterval(()=>{for(const t of Object.values(timed)){if(t.run&&t.seconds>0){t.seconds--;if(t.seconds===0)t.run=false}}renderTime()},1000);
+  $('timeBtn').onclick=()=>{timed.main.run=!timed.main.run;renderTime()};$('timeResetBtn').onclick=()=>{timed.main={seconds:900,run:false};renderTime()};$('activityBtn').onclick=()=>{timed.activity.run=!timed.activity.run;renderTime()};$('activityResetBtn').onclick=()=>{timed.activity={seconds:240,run:false};renderTime()};
+  $('prevBtn').onclick=()=>setSlide(current-1);$('nextBtn').onclick=()=>setSlide(current+1);
+  $('fullBtn').onclick=()=>{if(document.fullscreenElement){document.exitFullscreen?.()}else{document.documentElement.requestFullscreen?.()}};
+  document.addEventListener('fullscreenchange',()=>{$('fullBtn').textContent=document.fullscreenElement?'Exit fullscreen':'Fullscreen'});
+  $('notesBtn').onclick=()=>{$('notes').classList.toggle('open')};$('overviewBtn').onclick=()=>{$('overview').classList.toggle('open')};$('overviewClose').onclick=()=>{$('overview').classList.remove('open')};$('settingsBtn').onclick=()=>{$('setup').classList.toggle('open')};
+  for(let i=0;i<slides.length;i++){const b=document.createElement('button');b.className='overview-tile';b.innerHTML=`<span>0${i+1} / 08</span>${slides[i].dataset.title}`;b.onclick=()=>setSlide(i);$('overviewGrid').appendChild(b)}
+  function isEditing(el){return !!el?.closest?.('input,textarea,select,[contenteditable="true"]')}
+  document.addEventListener('keydown',e=>{if(isEditing(e.target))return;if($('teacherSheet').classList.contains('open'))return;if($('setup').classList.contains('open')){if(e.key==='Escape')$('setup').classList.remove('open');return}if($('overview').classList.contains('open')){if(e.key==='Escape')$('overview').classList.remove('open');return}if(e.key===' ' && e.target?.closest?.('button'))return;if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();setSlide(current+1)}else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();setSlide(current-1)}else if(e.key==='Home'){e.preventDefault();setSlide(0)}else if(e.key==='End'){e.preventDefault();setSlide(7)}else if(e.key.toLowerCase()==='n'){$('notes').classList.toggle('open')}else if(e.key.toLowerCase()==='o'){$('overview').classList.toggle('open')}else if(e.key==='Escape'){$('notes').classList.remove('open')}});
+  let appBase;
+  function cleanBase(s){try{const u=new URL(s,'http://localhost:3000/');if(!/^https?:$/.test(u.protocol))throw Error('Invalid URL');return u.origin+'/'}catch{return null}}
+  const chosen=new URLSearchParams(location.search).get('app');appBase=cleanBase(chosen||(['http:','https:'].includes(location.protocol)?location.origin:'http://localhost:3000/'));
+  function qrToSvg(url){const qr=new window.DuckQRCode(0,0);qr.addData(url);qr.make();const n=qr.getModuleCount(),gap=4,size=n+gap*2;let r=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" role="img" aria-label="QR code for ${url.replaceAll('&','and').replaceAll('"','')}" shape-rendering="crispEdges"><rect width="100%" height="100%" fill="white"/>`;for(let y=0;y<n;y++){for(let x=0;x<n;x++){if(qr.isDark(y,x))r+=`<rect x="${x+gap}" y="${y+gap}" width="1" height="1" fill="#192c3e"/>`}}return r+'</svg>'}
+  let joinUrl='';
+  async function refreshJoin(){if(!appBase)return;joinUrl=appBase;try{if(location.protocol!=='file:'&&new URL(appBase).origin===location.origin){const r=await fetch(appBase+'api/join-url');if(r.ok){const j=await r.json();if(j.url&&cleanBase(j.url))joinUrl=cleanBase(j.url)}}}catch{}$('joinText').textContent=joinUrl;try{$('joinQr').innerHTML=qrToSvg(joinUrl)}catch(e){$('joinQr').textContent='QR unavailable';console.warn(e)}$('serverInput').value=appBase;$('serverStatus').textContent=`Current app: ${appBase}`;attachFrames(true)}
+  function attachFrames(force=false){if(!appBase)return;const res=appBase+'results';const tch=appBase+'teacher';if(force||$('resultsEmbed').dataset.src!==res){$('resultsEmbed').src=res;$('resultsEmbed').dataset.src=res}if(force||$('teacherEmbed').dataset.src!==tch){$('teacherEmbed').src=tch;$('teacherEmbed').dataset.src=tch}}
+  $('serverSave').onclick=()=>{const v=cleanBase($('serverInput').value);if(!v){$('serverStatus').textContent='Enter a valid HTTP(S) URL.';return}appBase=v;$('setup').classList.remove('open');refreshJoin()};
+  $('teacherOpen').onclick=()=>{$('shade').classList.add('show');$('teacherSheet').classList.add('open');attachFrames()};function closeTeacher(){$('shade').classList.remove('show');$('teacherSheet').classList.remove('open')}$('teacherClose').onclick=closeTeacher;$('shade').onclick=closeTeacher;
+  setSlide(0);renderTime();refreshJoin();
+})();
+</script>
+</body>
+</html>

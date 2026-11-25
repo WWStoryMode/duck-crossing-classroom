@@ -9,6 +9,7 @@ A real-time classroom activity for a 15-minute microteaching session. Four table
 | `/` | Students | Choose table → classify 6 cards → submit / revise |
 | `/teacher` | Teacher (access code) | Live responses, justifications, lock, reveal, reset, demo mode, QR code |
 | `/results` | Projector | One table at a time, bar charts, ←/→ keys to switch tables |
+| `/present` | Teacher (projector) | 8-slide, 15-minute session deck with the join QR and live results built in |
 
 Stack: React + TypeScript + Vite + Tailwind (client), Express + Socket.IO (server), one process.
 
@@ -85,6 +86,18 @@ Health check endpoint: `GET /api/health`.
 3. **Activity (6–8 min):** groups classify their six cards, pick one debatable card, and submit. They can revise and resubmit, and each revision replaces their earlier answers rather than adding a new response. The projector updates live.
 4. **Lock:** press **Lock submissions** when time is up.
 5. **Reveal (5 min):** press **Reveal suggested answers**. The projector highlights the suggested answer (✓) and any defensible alternatives (◐) and shows a short explanation for each card. Students see their own evaluations: *Matches suggested answer* / *Open for discussion* / *Reconsider*. Use **Next table →** to work through tables 1–4.
+
+### Presenting with the slide deck (`/present`)
+
+`/present` is a static HTML deck (`public/present.html`) that runs the whole 15-minute session. You can also open it from the teacher dashboard with **Open presentation ↗**.
+
+- **Navigation:** ←/→, Space, or PgUp/PgDn change slides. Home/End jump to the first/last slide. **O** opens the slide overview, and **Fullscreen** is for the projector.
+- **Timers:** **Start timer** runs the 15-minute session clock. Slide 5 has its own 4-minute activity countdown.
+- **Slide 5:** shows the student join QR code. It uses `PUBLIC_URL` (from `/api/join-url`) if set, otherwise the deck's own address.
+- **Slide 6:** embeds the live `/results` view. **Teacher controls** opens `/teacher` in a side drawer, where you log in with the teacher code to lock submissions and reveal answers without leaving the deck.
+- **Notes:** **N** toggles presenter notes. They appear **on the projected screen**, so hide them before facing the class.
+
+The deck stores nothing; it only displays pages from the same server.
 
 ### Testing with demo mode
 
